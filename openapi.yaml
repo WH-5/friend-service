@@ -3,15 +3,121 @@
 
 openapi: 3.0.3
 info:
-    title: Greeter API
-    description: The greeting service definition.
+    title: ""
     version: 0.0.1
 paths:
+    /friend/accept:
+        post:
+            tags:
+                - Friend
+            operationId: Friend_AcceptFriendRequest
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.friend.v1.AcceptFriendRequestRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.friend.v1.AcceptFriendRequestResponse'
+    /friend/delete:
+        post:
+            tags:
+                - Friend
+            operationId: Friend_DeleteFriend
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.friend.v1.DeleteFriendRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.friend.v1.DeleteFriendResponse'
+    /friend/list/{uniqueId}:
+        get:
+            tags:
+                - Friend
+            operationId: Friend_GetFriendList
+            parameters:
+                - name: uniqueId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.friend.v1.GetFriendListResponse'
+    /friend/profile/{uniqueId}:
+        get:
+            tags:
+                - Friend
+            operationId: Friend_GetFriendProfile
+            parameters:
+                - name: uniqueId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.friend.v1.GetFriendProfileReply'
+    /friend/reject:
+        post:
+            tags:
+                - Friend
+            operationId: Friend_RejectFriendRequest
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.friend.v1.RejectFriendRequestRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.friend.v1.RejectFriendRequestResponse'
+    /friend/send:
+        post:
+            tags:
+                - Friend
+            operationId: Friend_SendFriendRequest
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.friend.v1.SendFriendRequestRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.friend.v1.SendFriendRequestResponse'
     /helloworld/{name}:
         get:
             tags:
                 - Greeter
-                - subgroup
             description: Sends a greeting
             operationId: Greeter_SayHello
             parameters:
@@ -29,6 +135,91 @@ paths:
                                 $ref: '#/components/schemas/helloworld.v1.HelloReply'
 components:
     schemas:
+        api.friend.v1.AcceptFriendRequestRequest:
+            type: object
+            properties:
+                selfUniqueId:
+                    type: string
+                otherUniqueId:
+                    type: string
+        api.friend.v1.AcceptFriendRequestResponse:
+            type: object
+            properties:
+                msg:
+                    type: string
+        api.friend.v1.DeleteFriendRequest:
+            type: object
+            properties:
+                selfUniqueId:
+                    type: string
+                targetUniqueId:
+                    type: string
+        api.friend.v1.DeleteFriendResponse:
+            type: object
+            properties:
+                msg:
+                    type: string
+        api.friend.v1.FriendInfo:
+            type: object
+            properties:
+                uniqueId:
+                    type: string
+                nickname:
+                    type: string
+        api.friend.v1.GetFriendListResponse:
+            type: object
+            properties:
+                friends:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.friend.v1.FriendInfo'
+        api.friend.v1.GetFriendProfileReply:
+            type: object
+            properties:
+                userProfile:
+                    $ref: '#/components/schemas/api.friend.v1.UserProfile'
+        api.friend.v1.RejectFriendRequestRequest:
+            type: object
+            properties:
+                selfUniqueId:
+                    type: string
+                otherUniqueId:
+                    type: string
+        api.friend.v1.RejectFriendRequestResponse:
+            type: object
+            properties:
+                msg:
+                    type: string
+        api.friend.v1.SendFriendRequestRequest:
+            type: object
+            properties:
+                selfUniqueId:
+                    type: string
+                targetUniqueId:
+                    type: string
+                greeting:
+                    type: string
+        api.friend.v1.SendFriendRequestResponse:
+            type: object
+            properties:
+                msg:
+                    type: string
+        api.friend.v1.UserProfile:
+            type: object
+            properties:
+                nickname:
+                    type: string
+                bio:
+                    type: string
+                gender:
+                    type: integer
+                    format: int32
+                birthday:
+                    type: string
+                location:
+                    type: string
+                other:
+                    type: string
         helloworld.v1.HelloReply:
             type: object
             properties:
@@ -36,4 +227,6 @@ components:
                     type: string
             description: The response message containing the greetings
 tags:
+    - name: Friend
     - name: Greeter
+      description: The greeting service definition.

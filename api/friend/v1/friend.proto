@@ -1,0 +1,119 @@
+syntax = "proto3";
+
+package api.friend.v1;
+
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+
+option go_package = "friend-service/api/friend/v1;v1";
+option java_multiple_files = true;
+option java_package = "api.friend.v1";
+
+service Friend {
+  rpc SendFriendRequest(SendFriendRequestRequest) returns (SendFriendRequestResponse){
+    option (google.api.http) = {
+      post: "/friend/send"
+      body: "*"
+    };
+  }
+  rpc AcceptFriendRequest(AcceptFriendRequestRequest) returns (AcceptFriendRequestResponse){
+    option (google.api.http) = {
+      post: "/friend/accept"
+      body: "*"
+    };
+  }
+  rpc RejectFriendRequest(RejectFriendRequestRequest) returns (RejectFriendRequestResponse){
+    option (google.api.http) = {
+      post: "/friend/reject"
+      body: "*"
+    };
+  }
+  rpc GetFriendList(GetFriendListRequest) returns (GetFriendListResponse){
+    option (google.api.http) = {
+      get: "/friend/list/{unique_id}"
+    };
+  }
+  rpc DeleteFriend(DeleteFriendRequest) returns (DeleteFriendResponse){
+    option (google.api.http) = {
+      post: "/friend/delete"
+      body: "*"
+    };
+  }
+  rpc GetFriendProfile(GetFriendProfileRequest) returns (GetFriendProfileReply){
+    option (google.api.http) = {
+      get: "/friend/profile/{unique_id}"
+    };
+  }
+}
+message GetFriendProfileRequest{
+  string unique_id=1;
+}
+
+message GetFriendProfileReply{
+  UserProfile user_profile=1;
+}
+
+message UserProfile {
+  string nickname = 1 [
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 30,
+      pattern: "^[一-龥A-Za-z0-9_\\x{1F600}-\\x{1F64F}\\x{1F300}-\\x{1F5FF}]+$|^$"
+    }
+  ];//中文、英语、数字、下划线、emoji
+  string bio = 3 [(validate.rules).string = {max_len: 200}];  // 最长 200 个字符
+  int32 gender = 4 [(validate.rules).int32 = {in: [0, 1, 2]}]; // 性别只能是 0（未知）、1（男）、2（女）
+  string birthday = 5 [(validate.rules).string = {pattern: "^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$|^$"}];  // YYYY-MM-DD 格式
+  string location = 6 [(validate.rules).string = {pattern: "^[一-龥A-Za-zA-Z]+/[一-龥A-Za-zA-Z]+$|^$"}]; // 位置格式：国家/城市
+  string other = 7;
+}
+
+message SendFriendRequestRequest {
+  string self_unique_id = 1;
+  string target_unique_id = 2;
+  string greeting = 3;
+}
+
+message SendFriendRequestResponse {
+  string msg=1;
+}
+
+message AcceptFriendRequestRequest {
+  string self_unique_id = 1;
+  string other_unique_id = 2;
+}
+
+message AcceptFriendRequestResponse {
+  string msg=1;
+}
+
+message RejectFriendRequestRequest {
+  string self_unique_id = 1;
+  string other_unique_id = 2;
+}
+
+message RejectFriendRequestResponse {
+  string msg=1;
+}
+
+message GetFriendListRequest {
+  string unique_id = 1;
+}
+
+message GetFriendListResponse {
+  repeated FriendInfo friends = 1;
+}
+
+message FriendInfo {
+  string unique_id = 1;
+  string nickname = 2;
+}
+
+message DeleteFriendRequest {
+  string self_unique_id = 1;
+  string target_unique_id = 2;
+}
+
+message DeleteFriendResponse {
+  string msg=1;
+}
