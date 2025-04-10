@@ -1,14 +1,14 @@
 package data
 
 import (
-	"friend-service/internal/conf"
+	"github.com/WH-5/friend-service/internal/conf"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
 )
 
 // ProviderSet is data providers.
-var ProviderSet = wire.NewSet(NewData, NewGreeterRepo, NewFriendRepo)
+var ProviderSet = wire.NewSet(NewData, NewFriendRepo)
 
 // Data .
 type Data struct {

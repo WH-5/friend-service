@@ -1,9 +1,12 @@
 package server
 
 import (
-	v1 "friend-service/api/helloworld/v1"
-	"friend-service/internal/conf"
-	"friend-service/internal/service"
+	v1 "github.com/WH-5/friend-service/api/friend/v1"
+	"github.com/WH-5/friend-service/internal/conf"
+	"github.com/WH-5/friend-service/internal/middleware"
+	"github.com/WH-5/friend-service/internal/service"
+	"github.com/go-kratos/kratos/v2/middleware/logging"
+	"github.com/go-kratos/kratos/v2/middleware/validate"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
@@ -11,10 +14,13 @@ import (
 )
 
 // NewGRPCServer new a gRPC server.
-func NewGRPCServer(c *conf.Server, greeter *service.GreeterService, logger log.Logger) *grpc.Server {
+func NewGRPCServer(c *conf.Server, friendService *service.FriendService, logger log.Logger) *grpc.Server {
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
+			middleware.AuthCheckExist(friendService),
 			recovery.Recovery(),
+			logging.Server(logger),
+			validate.Validator(),
 		),
 	}
 	if c.Grpc.Network != "" {
@@ -27,6 +33,7 @@ func NewGRPCServer(c *conf.Server, greeter *service.GreeterService, logger log.L
 		opts = append(opts, grpc.Timeout(c.Grpc.Timeout.AsDuration()))
 	}
 	srv := grpc.NewServer(opts...)
-	v1.RegisterGreeterServer(srv, greeter)
+	//v1.RegisterGreeterServer(srv, greeter)
+	v1.RegisterFriendServer(srv, friendService)
 	return srv
 }

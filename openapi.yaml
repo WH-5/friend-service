@@ -3,7 +3,7 @@
 
 openapi: 3.0.3
 info:
-    title: ""
+    title: Friend API
     version: 0.0.1
 paths:
     /friend/accept:
@@ -114,25 +114,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.friend.v1.SendFriendRequestResponse'
-    /helloworld/{name}:
-        get:
-            tags:
-                - Greeter
-            description: Sends a greeting
-            operationId: Greeter_SayHello
-            parameters:
-                - name: name
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/helloworld.v1.HelloReply'
 components:
     schemas:
         api.friend.v1.AcceptFriendRequestRequest:
@@ -197,8 +178,6 @@ components:
                     type: string
                 targetUniqueId:
                     type: string
-                greeting:
-                    type: string
         api.friend.v1.SendFriendRequestResponse:
             type: object
             properties:
@@ -220,13 +199,5 @@ components:
                     type: string
                 other:
                     type: string
-        helloworld.v1.HelloReply:
-            type: object
-            properties:
-                message:
-                    type: string
-            description: The response message containing the greetings
 tags:
     - name: Friend
-    - name: Greeter
-      description: The greeting service definition.

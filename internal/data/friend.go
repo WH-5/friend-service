@@ -1,7 +1,7 @@
 package data
 
 import (
-	"friend-service/internal/biz"
+	"github.com/WH-5/friend-service/internal/biz"
 	"github.com/go-kratos/kratos/v2/log"
 )
 

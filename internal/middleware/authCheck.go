@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/WH-5/friend-service/internal/pkg"
 	"github.com/WH-5/friend-service/internal/service"
+
 	"github.com/golang-jwt/jwt/v5"
 	"log"
 	"strings"
@@ -18,7 +19,7 @@ import (
 )
 
 // AuthCheckExist 检查token是否可用 可用会在上下文携带token和用户id
-func AuthCheckExist(userService *service.FriendService) middleware.Middleware {
+func AuthCheckExist(friendService *service.FriendService) middleware.Middleware {
 	return func(handler middleware.Handler) middleware.Handler {
 		return func(ctx context.Context, req interface{}) (reply interface{}, err error) {
 			log.Println("auth middleware in", req)
@@ -32,7 +33,7 @@ func AuthCheckExist(userService *service.FriendService) middleware.Middleware {
 
 				// 解析 Bearer Token
 				tokenString := strings.TrimPrefix(authHeader, "Bearer ")
-				token, err := pkg.ParseToken(tokenString, userService.UC.CF.JWT_SECRET_KEY)
+				token, err := pkg.ParseToken(tokenString, friendService.UC.CF.JWT_SECRET_KEY)
 				if err != nil {
 					return nil, err
 				}

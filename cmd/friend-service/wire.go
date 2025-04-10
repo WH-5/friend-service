@@ -6,11 +6,11 @@
 package main
 
 import (
-	"friend-service/internal/biz"
-	"friend-service/internal/conf"
-	"friend-service/internal/data"
-	"friend-service/internal/server"
-	"friend-service/internal/service"
+	"github.com/WH-5/friend-service/internal/biz"
+	"github.com/WH-5/friend-service/internal/conf"
+	"github.com/WH-5/friend-service/internal/data"
+	"github.com/WH-5/friend-service/internal/server"
+	"github.com/WH-5/friend-service/internal/service"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
@@ -18,6 +18,6 @@ import (
 )
 
 // wireApp init kratos application.
-func wireApp(*conf.Server, *conf.Data, log.Logger) (*kratos.App, func(), error) {
+func wireApp(*conf.Server, *conf.Data, *conf.Bizfig, log.Logger) (*kratos.App, func(), error) {
 	panic(wire.Build(server.ProviderSet, data.ProviderSet, biz.ProviderSet, service.ProviderSet, newApp))
 }

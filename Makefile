@@ -92,3 +92,6 @@ help:
 	{ lastLine = $$0 }' $(MAKEFILE_LIST)
 
 .DEFAULT_GOAL := help
+
+docker:
+	docker build -t friend-service .
