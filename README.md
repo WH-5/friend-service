@@ -1,3 +1,7 @@
+get设置好友备注
+好友uniqueid
+备注
+
 post 发送好友请求
 自己的uniqueid
 输入要添加的uniqueid，和打招呼内容
