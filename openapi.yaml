@@ -6,24 +6,6 @@ info:
     title: Friend API
     version: 0.0.1
 paths:
-    /friend/accept:
-        post:
-            tags:
-                - Friend
-            operationId: Friend_AcceptFriendRequest
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/api.friend.v1.AcceptFriendRequestRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/api.friend.v1.AcceptFriendRequestResponse'
     /friend/delete:
         post:
             tags:
@@ -42,15 +24,14 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.friend.v1.DeleteFriendResponse'
-    /friend/list/{uniqueId}:
+    /friend/list:
         get:
             tags:
                 - Friend
             operationId: Friend_GetFriendList
             parameters:
                 - name: uniqueId
-                  in: path
-                  required: true
+                  in: query
                   schema:
                     type: string
             responses:
@@ -78,25 +59,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.friend.v1.GetFriendProfileReply'
-    /friend/reject:
-        post:
-            tags:
-                - Friend
-            operationId: Friend_RejectFriendRequest
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/api.friend.v1.RejectFriendRequestRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/api.friend.v1.RejectFriendRequestResponse'
-    /friend/send:
+    /friend/request:
         post:
             tags:
                 - Friend
@@ -114,13 +77,47 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.friend.v1.SendFriendRequestResponse'
+    /friend/request/accept:
+        post:
+            tags:
+                - Friend
+            operationId: Friend_AcceptFriendRequest
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.friend.v1.AcceptFriendRequestRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.friend.v1.AcceptFriendRequestResponse'
+    /friend/request/reject:
+        post:
+            tags:
+                - Friend
+            operationId: Friend_RejectFriendRequest
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.friend.v1.RejectFriendRequestRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.friend.v1.RejectFriendRequestResponse'
 components:
     schemas:
         api.friend.v1.AcceptFriendRequestRequest:
             type: object
             properties:
-                selfUniqueId:
-                    type: string
                 otherUniqueId:
                     type: string
         api.friend.v1.AcceptFriendRequestResponse:
@@ -131,8 +128,6 @@ components:
         api.friend.v1.DeleteFriendRequest:
             type: object
             properties:
-                selfUniqueId:
-                    type: string
                 targetUniqueId:
                     type: string
         api.friend.v1.DeleteFriendResponse:
@@ -162,8 +157,6 @@ components:
         api.friend.v1.RejectFriendRequestRequest:
             type: object
             properties:
-                selfUniqueId:
-                    type: string
                 otherUniqueId:
                     type: string
         api.friend.v1.RejectFriendRequestResponse:
@@ -174,8 +167,6 @@ components:
         api.friend.v1.SendFriendRequestRequest:
             type: object
             properties:
-                selfUniqueId:
-                    type: string
                 targetUniqueId:
                     type: string
         api.friend.v1.SendFriendRequestResponse:

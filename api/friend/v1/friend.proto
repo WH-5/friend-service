@@ -12,25 +12,25 @@ option java_package = "api.friend.v1";
 service Friend {
   rpc SendFriendRequest(SendFriendRequestRequest) returns (SendFriendRequestResponse){
     option (google.api.http) = {
-      post: "/friend/send"
+      post: "/friend/request"
       body: "*"
     };
   }
   rpc AcceptFriendRequest(AcceptFriendRequestRequest) returns (AcceptFriendRequestResponse){
     option (google.api.http) = {
-      post: "/friend/accept"
+      post: "/friend/request/accept"
       body: "*"
     };
   }
   rpc RejectFriendRequest(RejectFriendRequestRequest) returns (RejectFriendRequestResponse){
     option (google.api.http) = {
-      post: "/friend/reject"
+      post: "/friend/request/reject"
       body: "*"
     };
   }
   rpc GetFriendList(GetFriendListRequest) returns (GetFriendListResponse){
     option (google.api.http) = {
-      get: "/friend/list/{unique_id}"
+      get: "/friend/list"
     };
   }
   rpc DeleteFriend(DeleteFriendRequest) returns (DeleteFriendResponse){
@@ -44,6 +44,7 @@ service Friend {
       get: "/friend/profile/{unique_id}"
     };
   }
+  //TODO设置好友备注接口
 }
 message GetFriendProfileRequest{
   string unique_id=1;
@@ -69,7 +70,7 @@ message UserProfile {
 }
 
 message SendFriendRequestRequest {
-  string self_unique_id = 1;
+
   string target_unique_id = 2;
 }
 
@@ -78,7 +79,7 @@ message SendFriendRequestResponse {
 }
 
 message AcceptFriendRequestRequest {
-  string self_unique_id = 1;
+
   string other_unique_id = 2;
 }
 
@@ -87,7 +88,7 @@ message AcceptFriendRequestResponse {
 }
 
 message RejectFriendRequestRequest {
-  string self_unique_id = 1;
+
   string other_unique_id = 2;
 }
 
@@ -96,7 +97,7 @@ message RejectFriendRequestResponse {
 }
 
 message GetFriendListRequest {
-  string unique_id = 1;
+
 }
 
 message GetFriendListResponse {
@@ -106,10 +107,11 @@ message GetFriendListResponse {
 message FriendInfo {
   string unique_id = 1;
   string nickname = 2;
+  string by_nickname=3;
 }
 
 message DeleteFriendRequest {
-  string self_unique_id = 1;
+
   string target_unique_id = 2;
 }
 

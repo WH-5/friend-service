@@ -37,10 +37,10 @@ type FriendHTTPServer interface {
 
 func RegisterFriendHTTPServer(s *http.Server, srv FriendHTTPServer) {
 	r := s.Route("/")
-	r.POST("/friend/send", _Friend_SendFriendRequest0_HTTP_Handler(srv))
-	r.POST("/friend/accept", _Friend_AcceptFriendRequest0_HTTP_Handler(srv))
-	r.POST("/friend/reject", _Friend_RejectFriendRequest0_HTTP_Handler(srv))
-	r.GET("/friend/list/{unique_id}", _Friend_GetFriendList0_HTTP_Handler(srv))
+	r.POST("/friend/request", _Friend_SendFriendRequest0_HTTP_Handler(srv))
+	r.POST("/friend/request/accept", _Friend_AcceptFriendRequest0_HTTP_Handler(srv))
+	r.POST("/friend/request/reject", _Friend_RejectFriendRequest0_HTTP_Handler(srv))
+	r.GET("/friend/list", _Friend_GetFriendList0_HTTP_Handler(srv))
 	r.POST("/friend/delete", _Friend_DeleteFriend0_HTTP_Handler(srv))
 	r.GET("/friend/profile/{unique_id}", _Friend_GetFriendProfile0_HTTP_Handler(srv))
 }
@@ -115,9 +115,6 @@ func _Friend_GetFriendList0_HTTP_Handler(srv FriendHTTPServer) func(ctx http.Con
 	return func(ctx http.Context) error {
 		var in GetFriendListRequest
 		if err := ctx.BindQuery(&in); err != nil {
-			return err
-		}
-		if err := ctx.BindVars(&in); err != nil {
 			return err
 		}
 		http.SetOperation(ctx, OperationFriendGetFriendList)
@@ -196,7 +193,7 @@ func NewFriendHTTPClient(client *http.Client) FriendHTTPClient {
 
 func (c *FriendHTTPClientImpl) AcceptFriendRequest(ctx context.Context, in *AcceptFriendRequestRequest, opts ...http.CallOption) (*AcceptFriendRequestResponse, error) {
 	var out AcceptFriendRequestResponse
-	pattern := "/friend/accept"
+	pattern := "/friend/request/accept"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationFriendAcceptFriendRequest))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -222,7 +219,7 @@ func (c *FriendHTTPClientImpl) DeleteFriend(ctx context.Context, in *DeleteFrien
 
 func (c *FriendHTTPClientImpl) GetFriendList(ctx context.Context, in *GetFriendListRequest, opts ...http.CallOption) (*GetFriendListResponse, error) {
 	var out GetFriendListResponse
-	pattern := "/friend/list/{unique_id}"
+	pattern := "/friend/list"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationFriendGetFriendList))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -248,7 +245,7 @@ func (c *FriendHTTPClientImpl) GetFriendProfile(ctx context.Context, in *GetFrie
 
 func (c *FriendHTTPClientImpl) RejectFriendRequest(ctx context.Context, in *RejectFriendRequestRequest, opts ...http.CallOption) (*RejectFriendRequestResponse, error) {
 	var out RejectFriendRequestResponse
-	pattern := "/friend/reject"
+	pattern := "/friend/request/reject"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationFriendRejectFriendRequest))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -261,7 +258,7 @@ func (c *FriendHTTPClientImpl) RejectFriendRequest(ctx context.Context, in *Reje
 
 func (c *FriendHTTPClientImpl) SendFriendRequest(ctx context.Context, in *SendFriendRequestRequest, opts ...http.CallOption) (*SendFriendRequestResponse, error) {
 	var out SendFriendRequestResponse
-	pattern := "/friend/send"
+	pattern := "/friend/request"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationFriendSendFriendRequest))
 	opts = append(opts, http.PathTemplate(pattern))

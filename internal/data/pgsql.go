@@ -11,13 +11,15 @@ type FriendRequest struct {
 	SenderID   uint   `gorm:"not null"`                                                       // 发送请求的用户 ID
 	ReceiverID uint   `gorm:"not null"`                                                       // 接收请求的用户 ID
 	Status     string `gorm:"type:enum('pending', 'accepted', 'rejected');default:'pending'"` // 请求状态
-
+	//双方只能存在一个好友请求
 }
 type Friendship struct {
 	gorm.Model
 	UserID   uint   `gorm:"not null"` // 用户A ID
 	FriendID uint   `gorm:"not null"` // 用户B ID
-	Nickname string `gorm:"not null"` // A给B的备注
+	Nickname string `gorm:"size:255"` // A给B的备注
+	//备注默认没有，如果为空，客户端会显示uniqueid
+	//新增好友时做一个限制：好友上限为500
 }
 type UserBehaviorLog struct {
 	gorm.Model

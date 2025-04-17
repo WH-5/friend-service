@@ -17,7 +17,9 @@ type FriendUsecase struct {
 func NewFriendUsecase(cf *conf.Bizfig, repo FriendRepo, logger log.Logger) *FriendUsecase {
 	return &FriendUsecase{CF: cf, repo: repo, log: log.NewHelper(logger)}
 }
-func (uc *FriendUsecase) SendFriend(ctx context.Context, Self, Target uint) (string, error) {
 
+// SendFriend 发送好友请求
+func (uc *FriendUsecase) SendFriend(ctx context.Context, Self, Target uint) (string, error) {
+	//根据两个id发送好友请求
 	return "", nil
 }

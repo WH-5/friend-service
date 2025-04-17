@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	pb "github.com/WH-5/friend-service/api/friend/v1"
 	v1 "github.com/WH-5/friend-service/api/user/v1"
 	"github.com/WH-5/friend-service/internal/biz"
@@ -31,19 +32,19 @@ func NewFriendService(c *conf.Server, usecase *biz.FriendUsecase) *FriendService
 // SendFriendRequest 根据 SelfUniqueId 和对方 UniqueId，发送好友请求
 func (s *FriendService) SendFriendRequest(ctx context.Context, req *pb.SendFriendRequestRequest) (*pb.SendFriendRequestResponse, error) {
 	// 根据请求中的 UniqueId 获取用户 ID（调用用户服务）
-	sid, err := s.UserClient.GetIdByUnique(ctx, &v1.GetIdByUniqueRequest{
-		UniqueId: req.SelfUniqueId,
-	})
-	if err != nil {
-		return nil, RequestSendError(err)
+	uidValue := ctx.Value("user_id")
+	sid, ok := uidValue.(float64)
+	if !ok {
+		return nil, RequestSendError(errors.New("invalid or missing user_id in context"))
 	}
 	tid, err := s.UserClient.GetIdByUnique(ctx, &v1.GetIdByUniqueRequest{
-		UniqueId: req.SelfUniqueId,
+		UniqueId: req.GetTargetUniqueId(),
 	})
 	if err != nil {
 		return nil, RequestSendError(err)
 	}
-	sendFriend, err := s.UC.SendFriend(ctx, uint(sid.GetUserId()), uint(tid.GetUserId()))
+	//获取了发送和接收方的userid
+	sendFriend, err := s.UC.SendFriend(ctx, uint(sid), uint(tid.GetUserId()))
 	if err != nil {
 		return nil, RequestSendError(err)
 	}
