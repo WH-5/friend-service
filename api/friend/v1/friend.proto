@@ -102,12 +102,13 @@ message GetFriendListRequest {
 
 message GetFriendListResponse {
   repeated FriendInfo friends = 1;
+  int32 count=2;
 }
 
 message FriendInfo {
   string unique_id = 1;
   string nickname = 2;
-  string by_nickname=3;
+
 }
 
 message DeleteFriendRequest {

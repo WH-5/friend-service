@@ -471,8 +471,6 @@ func (m *SendFriendRequestRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for SelfUniqueId
-
 	// no validation rules for TargetUniqueId
 
 	if len(errors) > 0 {
@@ -680,8 +678,6 @@ func (m *AcceptFriendRequestRequest) validate(all bool) error {
 	}
 
 	var errors []error
-
-	// no validation rules for SelfUniqueId
 
 	// no validation rules for OtherUniqueId
 
@@ -892,8 +888,6 @@ func (m *RejectFriendRequestRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for SelfUniqueId
-
 	// no validation rules for OtherUniqueId
 
 	if len(errors) > 0 {
@@ -1103,8 +1097,6 @@ func (m *GetFriendListRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for UniqueId
-
 	if len(errors) > 0 {
 		return GetFriendListRequestMultiError(errors)
 	}
@@ -1240,6 +1232,8 @@ func (m *GetFriendListResponse) validate(all bool) error {
 		}
 
 	}
+
+	// no validation rules for Count
 
 	if len(errors) > 0 {
 		return GetFriendListResponseMultiError(errors)
@@ -1445,8 +1439,6 @@ func (m *DeleteFriendRequest) validate(all bool) error {
 	}
 
 	var errors []error
-
-	// no validation rules for SelfUniqueId
 
 	// no validation rules for TargetUniqueId
 

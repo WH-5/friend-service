@@ -8,9 +8,9 @@ import (
 
 type FriendRequest struct {
 	gorm.Model
-	SenderID   uint   `gorm:"not null"`                                                       // 发送请求的用户 ID
-	ReceiverID uint   `gorm:"not null"`                                                       // 接收请求的用户 ID
-	Status     string `gorm:"type:enum('pending', 'accepted', 'rejected');default:'pending'"` // 请求状态
+	SenderID   uint   `gorm:"not null"`                           // 发送请求的用户 ID
+	ReceiverID uint   `gorm:"not null"`                           // 接收请求的用户 ID
+	Status     string `gorm:"type:varchar(20);default:'pending'"` // 请求状态
 	//双方只能存在一个好友请求
 }
 type Friendship struct {
