@@ -14,6 +14,8 @@ type FriendRepo interface {
 	AcceptRequest(ctx context.Context, self, target uint) error
 	RejectRequest(ctx context.Context, self, target uint) error
 	FriendList(ctx context.Context, self uint) ([]FriendInformation, int, error)
+	DeleteFriend(ctx context.Context, self, target uint) error
+	ModifyMark(ctx context.Context, self, target uint, mark string) error
 }
 
 type FriendUsecase struct {
@@ -24,6 +26,52 @@ type FriendUsecase struct {
 
 func NewFriendUsecase(cf *conf.Bizfig, repo FriendRepo, logger log.Logger) *FriendUsecase {
 	return &FriendUsecase{CF: cf, repo: repo, log: log.NewHelper(logger)}
+}
+func (uc *FriendUsecase) UpdateMark(ctx context.Context, self, target uint, mark string) error {
+	//判断是否为好友
+	isFriend, err := uc.repo.IsFriend(ctx, self, target)
+	if err != nil {
+		return err
+	}
+	if !isFriend {
+		return errors.New("不是好友关系")
+	}
+	err = uc.repo.ModifyMark(ctx, self, target, mark)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func (uc *FriendUsecase) IsFriend(ctx context.Context, self uint, target uint) error {
+	//不用判断相等
+	isFriend, err := uc.repo.IsFriend(ctx, self, target)
+	if err != nil {
+		return err
+	}
+	if !isFriend {
+		return errors.New("不是好友")
+	}
+	return nil
+}
+func (uc *FriendUsecase) DeleteFriend(ctx context.Context, self uint, target uint) error {
+	//不能是自己
+	if self == target {
+		return errors.New("不能删自己")
+	}
+	//判断是否好友关系
+	isFriend, err := uc.repo.IsFriend(ctx, self, target)
+	if err != nil {
+		return err
+	}
+	if !isFriend {
+		return errors.New("不是好友关系")
+	}
+	//删除好友
+	err = uc.repo.DeleteFriend(ctx, self, target)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // SendFriend 发送好友请求
@@ -56,7 +104,7 @@ func (uc *FriendUsecase) SendFriend(ctx context.Context, Self, Target uint) erro
 	if err != nil {
 		return err
 	}
-	// TODO 通知好友
+
 	return nil
 }
 
@@ -76,7 +124,7 @@ func (uc *FriendUsecase) AcceptFriend(ctx context.Context, Self, Target uint) er
 	if err != nil {
 		return err
 	}
-	//TODO通知好友
+
 	return nil
 }
 

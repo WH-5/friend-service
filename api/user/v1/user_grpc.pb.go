@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	User_GetIdByUnique_FullMethodName     = "/api.user.v1.User/GetIdByUnique"
 	User_GetUniqueByIdMany_FullMethodName = "/api.user.v1.User/GetUniqueByIdMany"
+	User_GetProfile_FullMethodName        = "/api.user.v1.User/GetProfile"
 )
 
 // UserClient is the client API for User service.
@@ -29,6 +30,7 @@ const (
 type UserClient interface {
 	GetIdByUnique(ctx context.Context, in *GetIdByUniqueRequest, opts ...grpc.CallOption) (*GetIdByUniqueReply, error)
 	GetUniqueByIdMany(ctx context.Context, in *GetUniqueByIdManyRequest, opts ...grpc.CallOption) (*GetUniqueByIdManyReply, error)
+	GetProfile(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*GetProfileReply, error)
 }
 
 type userClient struct {
@@ -59,12 +61,23 @@ func (c *userClient) GetUniqueByIdMany(ctx context.Context, in *GetUniqueByIdMan
 	return out, nil
 }
 
+func (c *userClient) GetProfile(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*GetProfileReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetProfileReply)
+	err := c.cc.Invoke(ctx, User_GetProfile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServer is the server API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility.
 type UserServer interface {
 	GetIdByUnique(context.Context, *GetIdByUniqueRequest) (*GetIdByUniqueReply, error)
 	GetUniqueByIdMany(context.Context, *GetUniqueByIdManyRequest) (*GetUniqueByIdManyReply, error)
+	GetProfile(context.Context, *GetProfileRequest) (*GetProfileReply, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -80,6 +93,9 @@ func (UnimplementedUserServer) GetIdByUnique(context.Context, *GetIdByUniqueRequ
 }
 func (UnimplementedUserServer) GetUniqueByIdMany(context.Context, *GetUniqueByIdManyRequest) (*GetUniqueByIdManyReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUniqueByIdMany not implemented")
+}
+func (UnimplementedUserServer) GetProfile(context.Context, *GetProfileRequest) (*GetProfileReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetProfile not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 func (UnimplementedUserServer) testEmbeddedByValue()              {}
@@ -138,6 +154,24 @@ func _User_GetUniqueByIdMany_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_GetProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetProfileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).GetProfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_GetProfile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).GetProfile(ctx, req.(*GetProfileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // User_ServiceDesc is the grpc.ServiceDesc for User service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -152,6 +186,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUniqueByIdMany",
 			Handler:    _User_GetUniqueByIdMany_Handler,
+		},
+		{
+			MethodName: "GetProfile",
+			Handler:    _User_GetProfile_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

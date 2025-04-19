@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/WH-5/friend-service/internal/biz"
 	"github.com/go-kratos/kratos/v2/log"
 	"gorm.io/gorm"
@@ -11,6 +12,30 @@ import (
 type friendRepo struct {
 	data *Data
 	log  *log.Helper
+}
+
+func (f *friendRepo) ModifyMark(ctx context.Context, self, target uint, mark string) error {
+	err := f.data.DB.Model(&Friendship{}).Where("user_id = ? AND friend_id = ?", self, target).Update("nickname", mark).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (f *friendRepo) DeleteFriend(ctx context.Context, self, target uint) error {
+	//f.data.DB.Where("user_id = ? AND friend_id = ?",self,target).Delete(&Friendship{})
+
+	err := f.data.DB.Transaction(func(tx *gorm.DB) error {
+		err := tx.Where("user_id = ? AND friend_id = ? OR user_id = ? AND friend_id = ?", self, target, target, self).Delete(&Friendship{}).Error
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("删除好友错误: %s", err)
+	}
+	return nil
 }
 
 func (f *friendRepo) FriendList(ctx context.Context, self uint) ([]biz.FriendInformation, int, error) {

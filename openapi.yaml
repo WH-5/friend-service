@@ -36,6 +36,24 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.friend.v1.GetFriendListResponse'
+    /friend/mark:
+        post:
+            tags:
+                - Friend
+            operationId: Friend_FriendMark
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.friend.v1.FriendMarkRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.friend.v1.FriendMarkReply'
     /friend/profile/{uniqueId}:
         get:
             tags:
@@ -137,6 +155,18 @@ components:
                     type: string
                 nickname:
                     type: string
+        api.friend.v1.FriendMarkReply:
+            type: object
+            properties:
+                msg:
+                    type: string
+        api.friend.v1.FriendMarkRequest:
+            type: object
+            properties:
+                uniqueId:
+                    type: string
+                mark:
+                    type: string
         api.friend.v1.GetFriendListResponse:
             type: object
             properties:
@@ -152,6 +182,8 @@ components:
             properties:
                 userProfile:
                     $ref: '#/components/schemas/api.friend.v1.UserProfile'
+                uniqueId:
+                    type: string
         api.friend.v1.RejectFriendRequestRequest:
             type: object
             properties:

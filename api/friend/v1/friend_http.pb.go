@@ -21,6 +21,7 @@ const _ = http.SupportPackageIsVersion1
 
 const OperationFriendAcceptFriendRequest = "/api.friend.v1.Friend/AcceptFriendRequest"
 const OperationFriendDeleteFriend = "/api.friend.v1.Friend/DeleteFriend"
+const OperationFriendFriendMark = "/api.friend.v1.Friend/FriendMark"
 const OperationFriendGetFriendList = "/api.friend.v1.Friend/GetFriendList"
 const OperationFriendGetFriendProfile = "/api.friend.v1.Friend/GetFriendProfile"
 const OperationFriendRejectFriendRequest = "/api.friend.v1.Friend/RejectFriendRequest"
@@ -29,6 +30,7 @@ const OperationFriendSendFriendRequest = "/api.friend.v1.Friend/SendFriendReques
 type FriendHTTPServer interface {
 	AcceptFriendRequest(context.Context, *AcceptFriendRequestRequest) (*AcceptFriendRequestResponse, error)
 	DeleteFriend(context.Context, *DeleteFriendRequest) (*DeleteFriendResponse, error)
+	FriendMark(context.Context, *FriendMarkRequest) (*FriendMarkReply, error)
 	GetFriendList(context.Context, *GetFriendListRequest) (*GetFriendListResponse, error)
 	GetFriendProfile(context.Context, *GetFriendProfileRequest) (*GetFriendProfileReply, error)
 	RejectFriendRequest(context.Context, *RejectFriendRequestRequest) (*RejectFriendRequestResponse, error)
@@ -43,6 +45,7 @@ func RegisterFriendHTTPServer(s *http.Server, srv FriendHTTPServer) {
 	r.GET("/friend/list", _Friend_GetFriendList0_HTTP_Handler(srv))
 	r.POST("/friend/delete", _Friend_DeleteFriend0_HTTP_Handler(srv))
 	r.GET("/friend/profile/{unique_id}", _Friend_GetFriendProfile0_HTTP_Handler(srv))
+	r.POST("/friend/mark", _Friend_FriendMark0_HTTP_Handler(srv))
 }
 
 func _Friend_SendFriendRequest0_HTTP_Handler(srv FriendHTTPServer) func(ctx http.Context) error {
@@ -174,9 +177,32 @@ func _Friend_GetFriendProfile0_HTTP_Handler(srv FriendHTTPServer) func(ctx http.
 	}
 }
 
+func _Friend_FriendMark0_HTTP_Handler(srv FriendHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in FriendMarkRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationFriendFriendMark)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.FriendMark(ctx, req.(*FriendMarkRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*FriendMarkReply)
+		return ctx.Result(200, reply)
+	}
+}
+
 type FriendHTTPClient interface {
 	AcceptFriendRequest(ctx context.Context, req *AcceptFriendRequestRequest, opts ...http.CallOption) (rsp *AcceptFriendRequestResponse, err error)
 	DeleteFriend(ctx context.Context, req *DeleteFriendRequest, opts ...http.CallOption) (rsp *DeleteFriendResponse, err error)
+	FriendMark(ctx context.Context, req *FriendMarkRequest, opts ...http.CallOption) (rsp *FriendMarkReply, err error)
 	GetFriendList(ctx context.Context, req *GetFriendListRequest, opts ...http.CallOption) (rsp *GetFriendListResponse, err error)
 	GetFriendProfile(ctx context.Context, req *GetFriendProfileRequest, opts ...http.CallOption) (rsp *GetFriendProfileReply, err error)
 	RejectFriendRequest(ctx context.Context, req *RejectFriendRequestRequest, opts ...http.CallOption) (rsp *RejectFriendRequestResponse, err error)
@@ -209,6 +235,19 @@ func (c *FriendHTTPClientImpl) DeleteFriend(ctx context.Context, in *DeleteFrien
 	pattern := "/friend/delete"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationFriendDeleteFriend))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *FriendHTTPClientImpl) FriendMark(ctx context.Context, in *FriendMarkRequest, opts ...http.CallOption) (*FriendMarkReply, error) {
+	var out FriendMarkReply
+	pattern := "/friend/mark"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationFriendFriendMark))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {

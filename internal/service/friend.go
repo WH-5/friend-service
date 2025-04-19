@@ -2,8 +2,11 @@ package service
 
 import (
 	"context"
+	"encoding/base64"
+	"encoding/json"
 	"errors"
 	pb "github.com/WH-5/friend-service/api/friend/v1"
+	v2 "github.com/WH-5/friend-service/api/push/v1"
 	v1 "github.com/WH-5/friend-service/api/user/v1"
 	"github.com/WH-5/friend-service/internal/biz"
 	"github.com/WH-5/friend-service/internal/conf"
@@ -15,6 +18,7 @@ type FriendService struct {
 	pb.UnimplementedFriendServer
 	UC         *biz.FriendUsecase
 	UserClient v1.UserClient
+	PushClient v2.PushClient
 }
 
 func NewFriendService(c *conf.Server, usecase *biz.FriendUsecase) *FriendService {
@@ -56,6 +60,30 @@ func (s *FriendService) SendFriendRequest(ctx context.Context, req *pb.SendFrien
 		return nil, RequestSendError(err)
 	}
 
+	// 原始数据
+	data := map[string]interface{}{
+		"type": 1,
+	}
+
+	// 转换为 JSON 字节
+	jsonBytes, err := json.Marshal(data)
+	if err != nil {
+		panic(err)
+	}
+
+	// base64 编码
+	encoded := base64.StdEncoding.EncodeToString(jsonBytes)
+	//通知好友，如果失败不返回错误，打印日志
+	_, err = s.PushClient.PushMsg(ctx, &v2.PushMsgRequest{
+		ToUnique:   req.GetTargetUniqueId(),
+		SelfUserId: uint64(sid),
+		MsgType:    2, //2代表好友消息
+		Payload:    []byte(encoded),
+	})
+	if err != nil {
+		log.Error(err)
+	}
+
 	// 返回结果
 	return &pb.SendFriendRequestResponse{Msg: "send success"}, nil
 }
@@ -87,6 +115,29 @@ func (s *FriendService) AcceptFriendRequest(ctx context.Context, req *pb.AcceptF
 		return nil, RequestAcceptError(err)
 	}
 
+	// 原始数据
+	data := map[string]interface{}{
+		"type": 2,
+	}
+
+	// 转换为 JSON 字节
+	jsonBytes, err := json.Marshal(data)
+	if err != nil {
+		panic(err)
+	}
+
+	// base64 编码
+	encoded := base64.StdEncoding.EncodeToString(jsonBytes)
+	//通知好友，如果失败不返回错误，打印日志
+	_, err = s.PushClient.PushMsg(ctx, &v2.PushMsgRequest{
+		ToUnique:   req.GetOtherUniqueId(),
+		SelfUserId: uint64(sid),
+		MsgType:    2, //2代表好友消息
+		Payload:    []byte(encoded),
+	})
+	if err != nil {
+		log.Error(err)
+	}
 	// 返回结果
 	return &pb.AcceptFriendRequestResponse{Msg: ""}, nil
 }
@@ -117,7 +168,29 @@ func (s *FriendService) RejectFriendRequest(ctx context.Context, req *pb.RejectF
 	if err != nil {
 		return nil, RequestRejectError(err)
 	}
+	// 原始数据
+	data := map[string]interface{}{
+		"type": 3,
+	}
 
+	// 转换为 JSON 字节
+	jsonBytes, err := json.Marshal(data)
+	if err != nil {
+		panic(err)
+	}
+
+	// base64 编码
+	encoded := base64.StdEncoding.EncodeToString(jsonBytes)
+	//通知好友，如果失败不返回错误，打印日志
+	_, err = s.PushClient.PushMsg(ctx, &v2.PushMsgRequest{
+		ToUnique:   req.GetOtherUniqueId(),
+		SelfUserId: uint64(sid),
+		MsgType:    2, //2代表好友消息
+		Payload:    []byte(encoded),
+	})
+	if err != nil {
+		log.Error(err)
+	}
 	// 返回结果
 	return &pb.RejectFriendRequestResponse{Msg: ""}, nil
 }
@@ -161,65 +234,140 @@ func (s *FriendService) GetFriendList(ctx context.Context, req *pb.GetFriendList
 	}, nil
 }
 
-//
-//// DeleteFriend 删除指定好友关系
-//// 1. 获取当前用户 ID
-//// 2. 获取目标好友 ID（通过 UniqueId 查询）
-//// 3. 调用 UseCase 删除好友关系（双向删除）
-//// 4. 返回处理结果
-//func (s *FriendService) DeleteFriend(ctx context.Context, req *pb.DeleteFriendRequest) (*pb.DeleteFriendResponse, error) {
-//	// 获取 user_id
-//	uidValue := ctx.Value("user_id")
-//	sid, ok := uidValue.(float64)
-//	if !ok {
-//		return nil, DeleteError(errors.New("invalid or missing user_id in context"))
-//	}
-//
-//	// 调用用户服务获取目标 user_id（如果有）
-//	tid, err := s.UserClient.GetIdByUnique(ctx, &v1.GetIdByUniqueRequest{
-//		UniqueId: req.GetTargetUniqueId(),
-//	})
-//	if err != nil {
-//		return nil, DeleteError(err)
-//	}
-//
-//	// 调用 UseCase 方法
-//	msg, err := s.UC.DeleteFriend(ctx, uint(sid), uint(tid.GetUserId()))
-//	if err != nil {
-//		return nil, DeleteError(err)
-//	}
-//
-//	// 返回结果
-//	return &pb.DeleteFriendResponse{Msg: msg}, nil
-//}
-//
-//// GetFriendProfile 获取好友详细信息
-//// 1. 获取当前用户 ID
-//// 2. 获取目标好友 ID（通过 UniqueId 查询）
-//// 3. 调用 UseCase 获取双方好友关系对应的 Profile 信息
-//// 4. 返回好友 Profile
-//func (s *FriendService) GetFriendProfile(ctx context.Context, req *pb.GetFriendProfileRequest) (*pb.GetFriendProfileReply, error) {
-//	// 获取 user_id
-//	uidValue := ctx.Value("user_id")
-//	sid, ok := uidValue.(float64)
-//	if !ok {
-//		return nil, RequestSendError(errors.New("invalid or missing user_id in context"))
-//	}
-//
-//	// 调用用户服务获取目标 user_id（如果有）
-//	tid, err := s.UserClient.GetIdByUnique(ctx, &v1.GetIdByUniqueRequest{
-//		UniqueId: req.GetFriendId(),
-//	})
-//	if err != nil {
-//		return nil, RequestSendError(err)
-//	}
-//
-//	// 调用 UseCase 方法
-//	profile, err := s.UC.GetProfile(ctx, uint(sid), uint(tid.GetUserId()))
-//	if err != nil {
-//		return nil, RequestSendError(err)
-//	}
-//
-//	// 返回结果
-//	return profile, nil
-//}
+// DeleteFriend 删除指定好友关系
+// 1. 获取当前用户 ID
+// 2. 获取目标好友 ID（通过 UniqueId 查询）
+// 3. 调用 UseCase 删除好友关系（双向删除）
+// 4. 返回处理结果
+func (s *FriendService) DeleteFriend(ctx context.Context, req *pb.DeleteFriendRequest) (*pb.DeleteFriendResponse, error) {
+	// 获取 user_id
+	uidValue := ctx.Value("user_id")
+	sid, ok := uidValue.(float64)
+	if !ok {
+		return nil, DeleteError(errors.New("invalid or missing user_id in context"))
+	}
+
+	// 调用用户服务获取目标 user_id（如果有）
+	tid, err := s.UserClient.GetIdByUnique(ctx, &v1.GetIdByUniqueRequest{
+		UniqueId: req.GetTargetUniqueId(),
+	})
+	if err != nil {
+		return nil, DeleteError(err)
+	}
+
+	// 调用 UseCase 方法
+	err = s.UC.DeleteFriend(ctx, uint(sid), uint(tid.GetUserId()))
+	if err != nil {
+		return nil, DeleteError(err)
+	}
+
+	// 原始数据
+	data := map[string]interface{}{
+		"type": 1,
+	}
+
+	// 转换为 JSON 字节
+	jsonBytes, err := json.Marshal(data)
+	if err != nil {
+		panic(err)
+	}
+
+	// base64 编码
+	encoded := base64.StdEncoding.EncodeToString(jsonBytes)
+	//通知好友，如果失败不返回错误，打印日志
+	_, err = s.PushClient.PushMsg(ctx, &v2.PushMsgRequest{
+		ToUnique:   req.GetTargetUniqueId(),
+		SelfUserId: uint64(sid),
+		MsgType:    2, //2代表好友消息
+		Payload:    []byte(encoded),
+	})
+	if err != nil {
+		log.Error(err)
+	}
+
+	// 返回结果
+	return &pb.DeleteFriendResponse{
+		Msg: "delete success",
+	}, nil
+}
+
+// GetFriendProfile 获取好友详细信息
+// 1. 获取当前用户 ID
+// 2. 获取目标好友 ID（通过 UniqueId 查询）
+// 3. 调用 UseCase 获取双方好友关系对应的 Profile 信息
+// 4. 返回好友 Profile
+func (s *FriendService) GetFriendProfile(ctx context.Context, req *pb.GetFriendProfileRequest) (*pb.GetFriendProfileReply, error) {
+	// 获取 user_id
+	uidValue := ctx.Value("user_id")
+	sid, ok := uidValue.(float64)
+	if !ok {
+		return nil, RequestSendError(errors.New("invalid or missing user_id in context"))
+	}
+
+	// 调用用户服务获取目标 user_id（如果有）
+	tid, err := s.UserClient.GetIdByUnique(ctx, &v1.GetIdByUniqueRequest{
+		UniqueId: req.GetUniqueId(),
+	})
+	if err != nil {
+		return nil, RequestSendError(err)
+	}
+	//判断是否好友
+	if uint64(sid) != tid.GetUserId() {
+		//如果不相同，相同的话是查询自己，允许
+		err := s.UC.IsFriend(ctx, uint(sid), uint(tid.GetUserId()))
+		if err != nil {
+			return nil, InternalError(err)
+		}
+	}
+	getProfile, err := s.UserClient.GetProfile(ctx, &v1.GetProfileRequest{UniqueId: req.GetUniqueId()})
+	if err != nil {
+		return nil, InternalError(err)
+	}
+
+	// 返回结果
+	return &pb.GetFriendProfileReply{
+		UniqueId: req.GetUniqueId(),
+		UserProfile: &pb.UserProfile{
+			Nickname: getProfile.Profile.Nickname,
+			Bio:      getProfile.Profile.Bio,
+			Gender:   getProfile.Profile.Gender,
+			Birthday: getProfile.Profile.Birthday,
+			Location: getProfile.Profile.Location,
+			Other:    getProfile.Profile.Other,
+		},
+	}, nil
+}
+func (s *FriendService) FriendMark(ctx context.Context, req *pb.FriendMarkRequest) (*pb.FriendMarkReply, error) {
+	// 获取 user_id
+	uidValue := ctx.Value("user_id")
+	sid, ok := uidValue.(float64)
+	if !ok {
+		return nil, RequestSendError(errors.New("invalid or missing user_id in context"))
+	}
+
+	// 调用用户服务获取目标 user_id（如果有）
+	tid, err := s.UserClient.GetIdByUnique(ctx, &v1.GetIdByUniqueRequest{
+		UniqueId: req.GetUniqueId(),
+	})
+	if err != nil {
+		return nil, RequestSendError(err)
+	}
+
+	if uint64(sid) == tid.GetUserId() {
+		return nil, InternalError(errors.New("不能给自己备注"))
+	}
+
+	//放到业务逻辑层处理
+	////判断是否好友
+	//err = s.UC.IsFriend(ctx, uint(sid), uint(tid.GetUserId()))
+	//if err != nil {
+	//	return nil, InternalError(err)
+	//}
+
+	//修改备注
+	err = s.UC.UpdateMark(ctx, uint(sid), uint(tid.GetUserId()), req.GetMark())
+	if err != nil {
+		return nil, InternalError(err)
+	}
+	return &pb.FriendMarkReply{}, nil
+}

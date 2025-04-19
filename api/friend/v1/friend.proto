@@ -44,14 +44,33 @@ service Friend {
       get: "/friend/profile/{unique_id}"
     };
   }
-  //TODO设置好友备注接口
+  rpc FriendMark(FriendMarkRequest)returns (FriendMarkReply){
+    option (google.api.http) = {
+      post: "/friend/mark"
+      body: "*"
+    };
+  }
+}
+message FriendMarkRequest{
+  string unique_id= 1 [(validate.rules).string = {min_len: 1, max_len: 20, pattern: "^[a-zA-Z0-9_-]{1,20}$"}];
+  string mark= 2 [
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 30,
+      pattern: "^[一-龥A-Za-z0-9_\\x{1F600}-\\x{1F64F}\\x{1F300}-\\x{1F5FF}]+$|^$"
+    }
+  ];//中文、英语、数字、下划线、emoji
+}
+message FriendMarkReply{
+  string msg=1;
 }
 message GetFriendProfileRequest{
-  string unique_id=1;
+  string unique_id=1[(validate.rules).string = {min_len: 1, max_len: 20, pattern: "^[a-zA-Z0-9_-]{1,20}$"}];
 }
 
 message GetFriendProfileReply{
   UserProfile user_profile=1;
+  string unique_id=2;
 }
 
 message UserProfile {
@@ -71,7 +90,7 @@ message UserProfile {
 
 message SendFriendRequestRequest {
 
-  string target_unique_id = 2;
+  string target_unique_id = 1 [(validate.rules).string = {min_len: 1, max_len: 20, pattern: "^[a-zA-Z0-9_-]{1,20}$"}];
 }
 
 message SendFriendRequestResponse {
@@ -80,7 +99,7 @@ message SendFriendRequestResponse {
 
 message AcceptFriendRequestRequest {
 
-  string other_unique_id = 2;
+  string other_unique_id = 1[(validate.rules).string = {min_len: 1, max_len: 20, pattern: "^[a-zA-Z0-9_-]{1,20}$"}];
 }
 
 message AcceptFriendRequestResponse {
@@ -89,7 +108,7 @@ message AcceptFriendRequestResponse {
 
 message RejectFriendRequestRequest {
 
-  string other_unique_id = 2;
+  string other_unique_id = 1 [(validate.rules).string = {min_len: 1, max_len: 20, pattern: "^[a-zA-Z0-9_-]{1,20}$"}];
 }
 
 message RejectFriendRequestResponse {
@@ -97,7 +116,7 @@ message RejectFriendRequestResponse {
 }
 
 message GetFriendListRequest {
-
+//空
 }
 
 message GetFriendListResponse {

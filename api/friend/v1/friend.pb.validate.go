@@ -35,6 +35,258 @@ var (
 	_ = sort.Sort
 )
 
+// Validate checks the field values on FriendMarkRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *FriendMarkRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on FriendMarkRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// FriendMarkRequestMultiError, or nil if none found.
+func (m *FriendMarkRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *FriendMarkRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if l := utf8.RuneCountInString(m.GetUniqueId()); l < 1 || l > 20 {
+		err := FriendMarkRequestValidationError{
+			field:  "UniqueId",
+			reason: "value length must be between 1 and 20 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if !_FriendMarkRequest_UniqueId_Pattern.MatchString(m.GetUniqueId()) {
+		err := FriendMarkRequestValidationError{
+			field:  "UniqueId",
+			reason: "value does not match regex pattern \"^[a-zA-Z0-9_-]{1,20}$\"",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if l := utf8.RuneCountInString(m.GetMark()); l < 0 || l > 30 {
+		err := FriendMarkRequestValidationError{
+			field:  "Mark",
+			reason: "value length must be between 0 and 30 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if !_FriendMarkRequest_Mark_Pattern.MatchString(m.GetMark()) {
+		err := FriendMarkRequestValidationError{
+			field:  "Mark",
+			reason: "value does not match regex pattern \"^[一-龥A-Za-z0-9_\\\\x{1F600}-\\\\x{1F64F}\\\\x{1F300}-\\\\x{1F5FF}]+$|^$\"",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return FriendMarkRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// FriendMarkRequestMultiError is an error wrapping multiple validation errors
+// returned by FriendMarkRequest.ValidateAll() if the designated constraints
+// aren't met.
+type FriendMarkRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m FriendMarkRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m FriendMarkRequestMultiError) AllErrors() []error { return m }
+
+// FriendMarkRequestValidationError is the validation error returned by
+// FriendMarkRequest.Validate if the designated constraints aren't met.
+type FriendMarkRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e FriendMarkRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e FriendMarkRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e FriendMarkRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e FriendMarkRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e FriendMarkRequestValidationError) ErrorName() string {
+	return "FriendMarkRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e FriendMarkRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sFriendMarkRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = FriendMarkRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = FriendMarkRequestValidationError{}
+
+var _FriendMarkRequest_UniqueId_Pattern = regexp.MustCompile("^[a-zA-Z0-9_-]{1,20}$")
+
+var _FriendMarkRequest_Mark_Pattern = regexp.MustCompile("^[一-龥A-Za-z0-9_\\x{1F600}-\\x{1F64F}\\x{1F300}-\\x{1F5FF}]+$|^$")
+
+// Validate checks the field values on FriendMarkReply with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *FriendMarkReply) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on FriendMarkReply with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// FriendMarkReplyMultiError, or nil if none found.
+func (m *FriendMarkReply) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *FriendMarkReply) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Msg
+
+	if len(errors) > 0 {
+		return FriendMarkReplyMultiError(errors)
+	}
+
+	return nil
+}
+
+// FriendMarkReplyMultiError is an error wrapping multiple validation errors
+// returned by FriendMarkReply.ValidateAll() if the designated constraints
+// aren't met.
+type FriendMarkReplyMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m FriendMarkReplyMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m FriendMarkReplyMultiError) AllErrors() []error { return m }
+
+// FriendMarkReplyValidationError is the validation error returned by
+// FriendMarkReply.Validate if the designated constraints aren't met.
+type FriendMarkReplyValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e FriendMarkReplyValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e FriendMarkReplyValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e FriendMarkReplyValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e FriendMarkReplyValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e FriendMarkReplyValidationError) ErrorName() string { return "FriendMarkReplyValidationError" }
+
+// Error satisfies the builtin error interface
+func (e FriendMarkReplyValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sFriendMarkReply.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = FriendMarkReplyValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = FriendMarkReplyValidationError{}
+
 // Validate checks the field values on GetFriendProfileRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
@@ -57,7 +309,27 @@ func (m *GetFriendProfileRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for UniqueId
+	if l := utf8.RuneCountInString(m.GetUniqueId()); l < 1 || l > 20 {
+		err := GetFriendProfileRequestValidationError{
+			field:  "UniqueId",
+			reason: "value length must be between 1 and 20 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if !_GetFriendProfileRequest_UniqueId_Pattern.MatchString(m.GetUniqueId()) {
+		err := GetFriendProfileRequestValidationError{
+			field:  "UniqueId",
+			reason: "value does not match regex pattern \"^[a-zA-Z0-9_-]{1,20}$\"",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if len(errors) > 0 {
 		return GetFriendProfileRequestMultiError(errors)
@@ -139,6 +411,8 @@ var _ interface {
 	ErrorName() string
 } = GetFriendProfileRequestValidationError{}
 
+var _GetFriendProfileRequest_UniqueId_Pattern = regexp.MustCompile("^[a-zA-Z0-9_-]{1,20}$")
+
 // Validate checks the field values on GetFriendProfileReply with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
@@ -189,6 +463,8 @@ func (m *GetFriendProfileReply) validate(all bool) error {
 			}
 		}
 	}
+
+	// no validation rules for UniqueId
 
 	if len(errors) > 0 {
 		return GetFriendProfileReplyMultiError(errors)
@@ -471,7 +747,27 @@ func (m *SendFriendRequestRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for TargetUniqueId
+	if l := utf8.RuneCountInString(m.GetTargetUniqueId()); l < 1 || l > 20 {
+		err := SendFriendRequestRequestValidationError{
+			field:  "TargetUniqueId",
+			reason: "value length must be between 1 and 20 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if !_SendFriendRequestRequest_TargetUniqueId_Pattern.MatchString(m.GetTargetUniqueId()) {
+		err := SendFriendRequestRequestValidationError{
+			field:  "TargetUniqueId",
+			reason: "value does not match regex pattern \"^[a-zA-Z0-9_-]{1,20}$\"",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if len(errors) > 0 {
 		return SendFriendRequestRequestMultiError(errors)
@@ -552,6 +848,8 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = SendFriendRequestRequestValidationError{}
+
+var _SendFriendRequestRequest_TargetUniqueId_Pattern = regexp.MustCompile("^[a-zA-Z0-9_-]{1,20}$")
 
 // Validate checks the field values on SendFriendRequestResponse with the rules
 // defined in the proto definition for this message. If any rules are
@@ -679,7 +977,27 @@ func (m *AcceptFriendRequestRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for OtherUniqueId
+	if l := utf8.RuneCountInString(m.GetOtherUniqueId()); l < 1 || l > 20 {
+		err := AcceptFriendRequestRequestValidationError{
+			field:  "OtherUniqueId",
+			reason: "value length must be between 1 and 20 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if !_AcceptFriendRequestRequest_OtherUniqueId_Pattern.MatchString(m.GetOtherUniqueId()) {
+		err := AcceptFriendRequestRequestValidationError{
+			field:  "OtherUniqueId",
+			reason: "value does not match regex pattern \"^[a-zA-Z0-9_-]{1,20}$\"",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if len(errors) > 0 {
 		return AcceptFriendRequestRequestMultiError(errors)
@@ -760,6 +1078,8 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = AcceptFriendRequestRequestValidationError{}
+
+var _AcceptFriendRequestRequest_OtherUniqueId_Pattern = regexp.MustCompile("^[a-zA-Z0-9_-]{1,20}$")
 
 // Validate checks the field values on AcceptFriendRequestResponse with the
 // rules defined in the proto definition for this message. If any rules are
@@ -888,7 +1208,27 @@ func (m *RejectFriendRequestRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for OtherUniqueId
+	if l := utf8.RuneCountInString(m.GetOtherUniqueId()); l < 1 || l > 20 {
+		err := RejectFriendRequestRequestValidationError{
+			field:  "OtherUniqueId",
+			reason: "value length must be between 1 and 20 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if !_RejectFriendRequestRequest_OtherUniqueId_Pattern.MatchString(m.GetOtherUniqueId()) {
+		err := RejectFriendRequestRequestValidationError{
+			field:  "OtherUniqueId",
+			reason: "value does not match regex pattern \"^[a-zA-Z0-9_-]{1,20}$\"",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if len(errors) > 0 {
 		return RejectFriendRequestRequestMultiError(errors)
@@ -969,6 +1309,8 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = RejectFriendRequestRequestValidationError{}
+
+var _RejectFriendRequestRequest_OtherUniqueId_Pattern = regexp.MustCompile("^[a-zA-Z0-9_-]{1,20}$")
 
 // Validate checks the field values on RejectFriendRequestResponse with the
 // rules defined in the proto definition for this message. If any rules are

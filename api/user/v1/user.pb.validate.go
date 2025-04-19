@@ -35,6 +35,444 @@ var (
 	_ = sort.Sort
 )
 
+// Validate checks the field values on GetProfileRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *GetProfileRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetProfileRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetProfileRequestMultiError, or nil if none found.
+func (m *GetProfileRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetProfileRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if l := utf8.RuneCountInString(m.GetUniqueId()); l < 1 || l > 20 {
+		err := GetProfileRequestValidationError{
+			field:  "UniqueId",
+			reason: "value length must be between 1 and 20 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if !_GetProfileRequest_UniqueId_Pattern.MatchString(m.GetUniqueId()) {
+		err := GetProfileRequestValidationError{
+			field:  "UniqueId",
+			reason: "value does not match regex pattern \"^[a-zA-Z0-9_-]{1,20}$\"",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return GetProfileRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetProfileRequestMultiError is an error wrapping multiple validation errors
+// returned by GetProfileRequest.ValidateAll() if the designated constraints
+// aren't met.
+type GetProfileRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetProfileRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetProfileRequestMultiError) AllErrors() []error { return m }
+
+// GetProfileRequestValidationError is the validation error returned by
+// GetProfileRequest.Validate if the designated constraints aren't met.
+type GetProfileRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetProfileRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetProfileRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetProfileRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetProfileRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetProfileRequestValidationError) ErrorName() string {
+	return "GetProfileRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetProfileRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetProfileRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetProfileRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetProfileRequestValidationError{}
+
+var _GetProfileRequest_UniqueId_Pattern = regexp.MustCompile("^[a-zA-Z0-9_-]{1,20}$")
+
+// Validate checks the field values on GetProfileReply with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *GetProfileReply) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetProfileReply with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetProfileReplyMultiError, or nil if none found.
+func (m *GetProfileReply) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetProfileReply) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetProfile()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GetProfileReplyValidationError{
+					field:  "Profile",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GetProfileReplyValidationError{
+					field:  "Profile",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetProfile()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetProfileReplyValidationError{
+				field:  "Profile",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for Phone
+
+	// no validation rules for Msg
+
+	if len(errors) > 0 {
+		return GetProfileReplyMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetProfileReplyMultiError is an error wrapping multiple validation errors
+// returned by GetProfileReply.ValidateAll() if the designated constraints
+// aren't met.
+type GetProfileReplyMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetProfileReplyMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetProfileReplyMultiError) AllErrors() []error { return m }
+
+// GetProfileReplyValidationError is the validation error returned by
+// GetProfileReply.Validate if the designated constraints aren't met.
+type GetProfileReplyValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetProfileReplyValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetProfileReplyValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetProfileReplyValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetProfileReplyValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetProfileReplyValidationError) ErrorName() string { return "GetProfileReplyValidationError" }
+
+// Error satisfies the builtin error interface
+func (e GetProfileReplyValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetProfileReply.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetProfileReplyValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetProfileReplyValidationError{}
+
+// Validate checks the field values on UserProfile with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *UserProfile) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UserProfile with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in UserProfileMultiError, or
+// nil if none found.
+func (m *UserProfile) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UserProfile) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if l := utf8.RuneCountInString(m.GetNickname()); l < 0 || l > 30 {
+		err := UserProfileValidationError{
+			field:  "Nickname",
+			reason: "value length must be between 0 and 30 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if !_UserProfile_Nickname_Pattern.MatchString(m.GetNickname()) {
+		err := UserProfileValidationError{
+			field:  "Nickname",
+			reason: "value does not match regex pattern \"^[一-龥A-Za-z0-9_\\\\x{1F600}-\\\\x{1F64F}\\\\x{1F300}-\\\\x{1F5FF}]+$|^$\"",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetBio()) > 200 {
+		err := UserProfileValidationError{
+			field:  "Bio",
+			reason: "value length must be at most 200 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if _, ok := _UserProfile_Gender_InLookup[m.GetGender()]; !ok {
+		err := UserProfileValidationError{
+			field:  "Gender",
+			reason: "value must be in list [0 1 2]",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if !_UserProfile_Birthday_Pattern.MatchString(m.GetBirthday()) {
+		err := UserProfileValidationError{
+			field:  "Birthday",
+			reason: "value does not match regex pattern \"^(19|20)\\\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$|^$\"",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if !_UserProfile_Location_Pattern.MatchString(m.GetLocation()) {
+		err := UserProfileValidationError{
+			field:  "Location",
+			reason: "value does not match regex pattern \"^[一-龥A-Za-zA-Z]+/[一-龥A-Za-zA-Z]+$|^$\"",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	// no validation rules for Other
+
+	if len(errors) > 0 {
+		return UserProfileMultiError(errors)
+	}
+
+	return nil
+}
+
+// UserProfileMultiError is an error wrapping multiple validation errors
+// returned by UserProfile.ValidateAll() if the designated constraints aren't met.
+type UserProfileMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UserProfileMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UserProfileMultiError) AllErrors() []error { return m }
+
+// UserProfileValidationError is the validation error returned by
+// UserProfile.Validate if the designated constraints aren't met.
+type UserProfileValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UserProfileValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UserProfileValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UserProfileValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UserProfileValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UserProfileValidationError) ErrorName() string { return "UserProfileValidationError" }
+
+// Error satisfies the builtin error interface
+func (e UserProfileValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUserProfile.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UserProfileValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UserProfileValidationError{}
+
+var _UserProfile_Nickname_Pattern = regexp.MustCompile("^[一-龥A-Za-z0-9_\\x{1F600}-\\x{1F64F}\\x{1F300}-\\x{1F5FF}]+$|^$")
+
+var _UserProfile_Gender_InLookup = map[int32]struct{}{
+	0: {},
+	1: {},
+	2: {},
+}
+
+var _UserProfile_Birthday_Pattern = regexp.MustCompile("^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$|^$")
+
+var _UserProfile_Location_Pattern = regexp.MustCompile("^[一-龥A-Za-zA-Z]+/[一-龥A-Za-zA-Z]+$|^$")
+
 // Validate checks the field values on GetUniqueByIdManyRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.

@@ -103,6 +103,25 @@
 **返回**：
 - 修改后的备注内容
 
+---
 
+## 8. 获取需要审批的请求列表
 
-8.获取需要审批的请求列表
+**接口**：`GET /friends/requests/pending`  
+**返回**：
+- 需要审批的好友请求列表（含请求发起方 ID、请求时间、状态等信息）
+- 返回格式示例：
+  ```json
+  [
+    {
+      "from_id": "user_unique_id_1",
+      "request_time": "2025-04-19T00:00:00Z",
+      "status": "pending"
+    },
+    {
+      "from_id": "user_unique_id_2",
+      "request_time": "2025-04-18T00:00:00Z",
+      "status": "pending"
+    }
+  ]
+  ```
