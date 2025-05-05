@@ -44,12 +44,30 @@ service Friend {
       get: "/friend/profile/{unique_id}"
     };
   }
+  rpc GetRequestPending(GetRequestPendingRequest)returns(GetRequestPendingReply){
+    option (google.api.http) = {
+      get: "/friend/request/pending"
+    };
+  }
+
+
   rpc FriendMark(FriendMarkRequest)returns (FriendMarkReply){
     option (google.api.http) = {
       post: "/friend/mark"
       body: "*"
     };
   }
+}
+message GetRequestPendingRequest{
+
+}
+message GetRequestPendingReply {
+  repeated FriendRequestInfo requests = 1;
+}
+
+message FriendRequestInfo {
+  string from_id = 1;
+  string request_time = 2;
 }
 message FriendMarkRequest{
   string unique_id= 1 [(validate.rules).string = {min_len: 1, max_len: 20, pattern: "^[a-zA-Z0-9_-]{1,20}$"}];

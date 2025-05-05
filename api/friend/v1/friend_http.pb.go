@@ -24,6 +24,7 @@ const OperationFriendDeleteFriend = "/api.friend.v1.Friend/DeleteFriend"
 const OperationFriendFriendMark = "/api.friend.v1.Friend/FriendMark"
 const OperationFriendGetFriendList = "/api.friend.v1.Friend/GetFriendList"
 const OperationFriendGetFriendProfile = "/api.friend.v1.Friend/GetFriendProfile"
+const OperationFriendGetRequestPending = "/api.friend.v1.Friend/GetRequestPending"
 const OperationFriendRejectFriendRequest = "/api.friend.v1.Friend/RejectFriendRequest"
 const OperationFriendSendFriendRequest = "/api.friend.v1.Friend/SendFriendRequest"
 
@@ -33,6 +34,7 @@ type FriendHTTPServer interface {
 	FriendMark(context.Context, *FriendMarkRequest) (*FriendMarkReply, error)
 	GetFriendList(context.Context, *GetFriendListRequest) (*GetFriendListResponse, error)
 	GetFriendProfile(context.Context, *GetFriendProfileRequest) (*GetFriendProfileReply, error)
+	GetRequestPending(context.Context, *GetRequestPendingRequest) (*GetRequestPendingReply, error)
 	RejectFriendRequest(context.Context, *RejectFriendRequestRequest) (*RejectFriendRequestResponse, error)
 	SendFriendRequest(context.Context, *SendFriendRequestRequest) (*SendFriendRequestResponse, error)
 }
@@ -45,6 +47,7 @@ func RegisterFriendHTTPServer(s *http.Server, srv FriendHTTPServer) {
 	r.GET("/friend/list", _Friend_GetFriendList0_HTTP_Handler(srv))
 	r.POST("/friend/delete", _Friend_DeleteFriend0_HTTP_Handler(srv))
 	r.GET("/friend/profile/{unique_id}", _Friend_GetFriendProfile0_HTTP_Handler(srv))
+	r.GET("/friend/request/pending", _Friend_GetRequestPending0_HTTP_Handler(srv))
 	r.POST("/friend/mark", _Friend_FriendMark0_HTTP_Handler(srv))
 }
 
@@ -177,6 +180,25 @@ func _Friend_GetFriendProfile0_HTTP_Handler(srv FriendHTTPServer) func(ctx http.
 	}
 }
 
+func _Friend_GetRequestPending0_HTTP_Handler(srv FriendHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetRequestPendingRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationFriendGetRequestPending)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetRequestPending(ctx, req.(*GetRequestPendingRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GetRequestPendingReply)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _Friend_FriendMark0_HTTP_Handler(srv FriendHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in FriendMarkRequest
@@ -205,6 +227,7 @@ type FriendHTTPClient interface {
 	FriendMark(ctx context.Context, req *FriendMarkRequest, opts ...http.CallOption) (rsp *FriendMarkReply, err error)
 	GetFriendList(ctx context.Context, req *GetFriendListRequest, opts ...http.CallOption) (rsp *GetFriendListResponse, err error)
 	GetFriendProfile(ctx context.Context, req *GetFriendProfileRequest, opts ...http.CallOption) (rsp *GetFriendProfileReply, err error)
+	GetRequestPending(ctx context.Context, req *GetRequestPendingRequest, opts ...http.CallOption) (rsp *GetRequestPendingReply, err error)
 	RejectFriendRequest(ctx context.Context, req *RejectFriendRequestRequest, opts ...http.CallOption) (rsp *RejectFriendRequestResponse, err error)
 	SendFriendRequest(ctx context.Context, req *SendFriendRequestRequest, opts ...http.CallOption) (rsp *SendFriendRequestResponse, err error)
 }
@@ -274,6 +297,19 @@ func (c *FriendHTTPClientImpl) GetFriendProfile(ctx context.Context, in *GetFrie
 	pattern := "/friend/profile/{unique_id}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationFriendGetFriendProfile))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *FriendHTTPClientImpl) GetRequestPending(ctx context.Context, in *GetRequestPendingRequest, opts ...http.CallOption) (*GetRequestPendingReply, error) {
+	var out GetRequestPendingReply
+	pattern := "/friend/request/pending"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationFriendGetRequestPending))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

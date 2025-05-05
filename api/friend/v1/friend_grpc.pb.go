@@ -25,6 +25,7 @@ const (
 	Friend_GetFriendList_FullMethodName       = "/api.friend.v1.Friend/GetFriendList"
 	Friend_DeleteFriend_FullMethodName        = "/api.friend.v1.Friend/DeleteFriend"
 	Friend_GetFriendProfile_FullMethodName    = "/api.friend.v1.Friend/GetFriendProfile"
+	Friend_GetRequestPending_FullMethodName   = "/api.friend.v1.Friend/GetRequestPending"
 	Friend_FriendMark_FullMethodName          = "/api.friend.v1.Friend/FriendMark"
 )
 
@@ -38,6 +39,7 @@ type FriendClient interface {
 	GetFriendList(ctx context.Context, in *GetFriendListRequest, opts ...grpc.CallOption) (*GetFriendListResponse, error)
 	DeleteFriend(ctx context.Context, in *DeleteFriendRequest, opts ...grpc.CallOption) (*DeleteFriendResponse, error)
 	GetFriendProfile(ctx context.Context, in *GetFriendProfileRequest, opts ...grpc.CallOption) (*GetFriendProfileReply, error)
+	GetRequestPending(ctx context.Context, in *GetRequestPendingRequest, opts ...grpc.CallOption) (*GetRequestPendingReply, error)
 	FriendMark(ctx context.Context, in *FriendMarkRequest, opts ...grpc.CallOption) (*FriendMarkReply, error)
 }
 
@@ -109,6 +111,16 @@ func (c *friendClient) GetFriendProfile(ctx context.Context, in *GetFriendProfil
 	return out, nil
 }
 
+func (c *friendClient) GetRequestPending(ctx context.Context, in *GetRequestPendingRequest, opts ...grpc.CallOption) (*GetRequestPendingReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetRequestPendingReply)
+	err := c.cc.Invoke(ctx, Friend_GetRequestPending_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *friendClient) FriendMark(ctx context.Context, in *FriendMarkRequest, opts ...grpc.CallOption) (*FriendMarkReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(FriendMarkReply)
@@ -129,6 +141,7 @@ type FriendServer interface {
 	GetFriendList(context.Context, *GetFriendListRequest) (*GetFriendListResponse, error)
 	DeleteFriend(context.Context, *DeleteFriendRequest) (*DeleteFriendResponse, error)
 	GetFriendProfile(context.Context, *GetFriendProfileRequest) (*GetFriendProfileReply, error)
+	GetRequestPending(context.Context, *GetRequestPendingRequest) (*GetRequestPendingReply, error)
 	FriendMark(context.Context, *FriendMarkRequest) (*FriendMarkReply, error)
 	mustEmbedUnimplementedFriendServer()
 }
@@ -157,6 +170,9 @@ func (UnimplementedFriendServer) DeleteFriend(context.Context, *DeleteFriendRequ
 }
 func (UnimplementedFriendServer) GetFriendProfile(context.Context, *GetFriendProfileRequest) (*GetFriendProfileReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetFriendProfile not implemented")
+}
+func (UnimplementedFriendServer) GetRequestPending(context.Context, *GetRequestPendingRequest) (*GetRequestPendingReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRequestPending not implemented")
 }
 func (UnimplementedFriendServer) FriendMark(context.Context, *FriendMarkRequest) (*FriendMarkReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FriendMark not implemented")
@@ -290,6 +306,24 @@ func _Friend_GetFriendProfile_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Friend_GetRequestPending_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRequestPendingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FriendServer).GetRequestPending(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Friend_GetRequestPending_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FriendServer).GetRequestPending(ctx, req.(*GetRequestPendingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Friend_FriendMark_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(FriendMarkRequest)
 	if err := dec(in); err != nil {
@@ -338,6 +372,10 @@ var Friend_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetFriendProfile",
 			Handler:    _Friend_GetFriendProfile_Handler,
+		},
+		{
+			MethodName: "GetRequestPending",
+			Handler:    _Friend_GetRequestPending_Handler,
 		},
 		{
 			MethodName: "FriendMark",

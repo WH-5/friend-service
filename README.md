@@ -2,6 +2,24 @@
 
 以下是好友服务的接口说明及相关校验逻辑。
 
+
+好友列表
+GET /friend/list
+添加好友
+POST /friend/request
+请求通知页
+你需要额外扩展接口，当前 proto 中未定义
+接受好友请求
+POST /friend/request/accept
+拒绝好友请求
+POST /friend/request/reject
+好友详情页
+GET /friend/profile/{unique_id}
+修改备注
+POST /friend/mark
+删除好友
+POST /friend/delete
+
 ---
 
 ## 1. 发送好友请求

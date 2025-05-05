@@ -35,6 +35,350 @@ var (
 	_ = sort.Sort
 )
 
+// Validate checks the field values on GetRequestPendingRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetRequestPendingRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetRequestPendingRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetRequestPendingRequestMultiError, or nil if none found.
+func (m *GetRequestPendingRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetRequestPendingRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return GetRequestPendingRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetRequestPendingRequestMultiError is an error wrapping multiple validation
+// errors returned by GetRequestPendingRequest.ValidateAll() if the designated
+// constraints aren't met.
+type GetRequestPendingRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetRequestPendingRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetRequestPendingRequestMultiError) AllErrors() []error { return m }
+
+// GetRequestPendingRequestValidationError is the validation error returned by
+// GetRequestPendingRequest.Validate if the designated constraints aren't met.
+type GetRequestPendingRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetRequestPendingRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetRequestPendingRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetRequestPendingRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetRequestPendingRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetRequestPendingRequestValidationError) ErrorName() string {
+	return "GetRequestPendingRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetRequestPendingRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetRequestPendingRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetRequestPendingRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetRequestPendingRequestValidationError{}
+
+// Validate checks the field values on GetRequestPendingReply with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetRequestPendingReply) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetRequestPendingReply with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetRequestPendingReplyMultiError, or nil if none found.
+func (m *GetRequestPendingReply) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetRequestPendingReply) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetRequests() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, GetRequestPendingReplyValidationError{
+						field:  fmt.Sprintf("Requests[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, GetRequestPendingReplyValidationError{
+						field:  fmt.Sprintf("Requests[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return GetRequestPendingReplyValidationError{
+					field:  fmt.Sprintf("Requests[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return GetRequestPendingReplyMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetRequestPendingReplyMultiError is an error wrapping multiple validation
+// errors returned by GetRequestPendingReply.ValidateAll() if the designated
+// constraints aren't met.
+type GetRequestPendingReplyMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetRequestPendingReplyMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetRequestPendingReplyMultiError) AllErrors() []error { return m }
+
+// GetRequestPendingReplyValidationError is the validation error returned by
+// GetRequestPendingReply.Validate if the designated constraints aren't met.
+type GetRequestPendingReplyValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetRequestPendingReplyValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetRequestPendingReplyValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetRequestPendingReplyValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetRequestPendingReplyValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetRequestPendingReplyValidationError) ErrorName() string {
+	return "GetRequestPendingReplyValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetRequestPendingReplyValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetRequestPendingReply.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetRequestPendingReplyValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetRequestPendingReplyValidationError{}
+
+// Validate checks the field values on FriendRequestInfo with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *FriendRequestInfo) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on FriendRequestInfo with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// FriendRequestInfoMultiError, or nil if none found.
+func (m *FriendRequestInfo) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *FriendRequestInfo) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for FromId
+
+	// no validation rules for RequestTime
+
+	if len(errors) > 0 {
+		return FriendRequestInfoMultiError(errors)
+	}
+
+	return nil
+}
+
+// FriendRequestInfoMultiError is an error wrapping multiple validation errors
+// returned by FriendRequestInfo.ValidateAll() if the designated constraints
+// aren't met.
+type FriendRequestInfoMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m FriendRequestInfoMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m FriendRequestInfoMultiError) AllErrors() []error { return m }
+
+// FriendRequestInfoValidationError is the validation error returned by
+// FriendRequestInfo.Validate if the designated constraints aren't met.
+type FriendRequestInfoValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e FriendRequestInfoValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e FriendRequestInfoValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e FriendRequestInfoValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e FriendRequestInfoValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e FriendRequestInfoValidationError) ErrorName() string {
+	return "FriendRequestInfoValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e FriendRequestInfoValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sFriendRequestInfo.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = FriendRequestInfoValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = FriendRequestInfoValidationError{}
+
 // Validate checks the field values on FriendMarkRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, the
 // first error encountered is returned, or nil if there are no violations.

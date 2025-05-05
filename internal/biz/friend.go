@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/WH-5/friend-service/internal/conf"
 	"github.com/go-kratos/kratos/v2/log"
+	"time"
 )
 
 type FriendRepo interface {
@@ -16,6 +17,7 @@ type FriendRepo interface {
 	FriendList(ctx context.Context, self uint) ([]FriendInformation, int, error)
 	DeleteFriend(ctx context.Context, self, target uint) error
 	ModifyMark(ctx context.Context, self, target uint, mark string) error
+	RPending(ctx context.Context, self uint) ([]RequestPending, error)
 }
 
 type FriendUsecase struct {
@@ -27,6 +29,21 @@ type FriendUsecase struct {
 func NewFriendUsecase(cf *conf.Bizfig, repo FriendRepo, logger log.Logger) *FriendUsecase {
 	return &FriendUsecase{CF: cf, repo: repo, log: log.NewHelper(logger)}
 }
+
+type RequestPending struct {
+	FromId uint      `json:"from_id"`
+	Time   time.Time `json:"time"`
+}
+
+func (uc *FriendUsecase) RequestPend(ctx context.Context, uid uint) ([]RequestPending, error) {
+	pending, err := uc.repo.RPending(ctx, uid)
+	if err != nil {
+		return nil, err
+	}
+
+	return pending, nil
+}
+
 func (uc *FriendUsecase) UpdateMark(ctx context.Context, self, target uint, mark string) error {
 	//判断是否为好友
 	isFriend, err := uc.repo.IsFriend(ctx, self, target)

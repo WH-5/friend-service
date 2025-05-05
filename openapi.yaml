@@ -108,6 +108,18 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.friend.v1.AcceptFriendRequestResponse'
+    /friend/request/pending:
+        get:
+            tags:
+                - Friend
+            operationId: Friend_GetRequestPending
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.friend.v1.GetRequestPendingReply'
     /friend/request/reject:
         post:
             tags:
@@ -167,6 +179,13 @@ components:
                     type: string
                 mark:
                     type: string
+        api.friend.v1.FriendRequestInfo:
+            type: object
+            properties:
+                fromId:
+                    type: string
+                requestTime:
+                    type: string
         api.friend.v1.GetFriendListResponse:
             type: object
             properties:
@@ -184,6 +203,13 @@ components:
                     $ref: '#/components/schemas/api.friend.v1.UserProfile'
                 uniqueId:
                     type: string
+        api.friend.v1.GetRequestPendingReply:
+            type: object
+            properties:
+                requests:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.friend.v1.FriendRequestInfo'
         api.friend.v1.RejectFriendRequestRequest:
             type: object
             properties:

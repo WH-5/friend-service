@@ -14,6 +14,20 @@ type friendRepo struct {
 	log  *log.Helper
 }
 
+func (f *friendRepo) RPending(ctx context.Context, self uint) ([]biz.RequestPending, error) {
+
+	var requests []biz.RequestPending
+	err := f.data.DB.
+		Model(&FriendRequest{}).
+		Where("receiver_id = ? AND status = ?", self, "pending").
+		Select("sender_id AS from_id", "created_at AS request_time").
+		Scan(&requests).Error
+	if err != nil {
+		return nil, err
+	}
+	return requests, nil
+}
+
 func (f *friendRepo) ModifyMark(ctx context.Context, self, target uint, mark string) error {
 	err := f.data.DB.Model(&Friendship{}).Where("user_id = ? AND friend_id = ?", self, target).Update("nickname", mark).Error
 	if err != nil {

@@ -337,6 +337,8 @@ func (s *FriendService) GetFriendProfile(ctx context.Context, req *pb.GetFriendP
 		},
 	}, nil
 }
+
+// FriendMark 给好友改备注
 func (s *FriendService) FriendMark(ctx context.Context, req *pb.FriendMarkRequest) (*pb.FriendMarkReply, error) {
 	// 获取 user_id
 	uidValue := ctx.Value("user_id")
@@ -370,4 +372,37 @@ func (s *FriendService) FriendMark(ctx context.Context, req *pb.FriendMarkReques
 		return nil, InternalError(err)
 	}
 	return &pb.FriendMarkReply{}, nil
+}
+
+// GetRequestPending RequestPending 获取需要审批的好友申请
+func (s *FriendService) GetRequestPending(ctx context.Context, req *pb.GetRequestPendingRequest) (*pb.GetRequestPendingReply, error) {
+	// 获取 user_id
+	uidValue := ctx.Value("user_id")
+	sid, ok := uidValue.(float64)
+	if !ok {
+		return nil, ListFetchError(errors.New("invalid or missing user_id in context"))
+	}
+
+	pend, err := s.UC.RequestPend(ctx, uint(sid))
+	if err != nil {
+		//随便返回一个错误
+		return nil, RequestSendError(err)
+	}
+	var man = make([]*pb.FriendRequestInfo, 0)
+	for p := range pend {
+		many, err := s.UserClient.GetUniqueByIdMany(ctx, &v1.GetUniqueByIdManyRequest{
+			UserId: uint64(pend[p].FromId),
+		})
+		if err != nil {
+			return nil, err
+		}
+		man = append(man, &pb.FriendRequestInfo{
+			FromId:      many.UniqueId,
+			RequestTime: pend[p].Time.String(),
+		})
+	}
+
+	return &pb.GetRequestPendingReply{
+		Requests: man,
+	}, nil
 }
