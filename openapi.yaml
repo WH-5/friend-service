@@ -203,6 +203,8 @@ components:
                     $ref: '#/components/schemas/api.friend.v1.UserProfile'
                 uniqueId:
                     type: string
+                publicKey:
+                    type: string
         api.friend.v1.GetRequestPendingReply:
             type: object
             properties:

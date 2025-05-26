@@ -324,6 +324,12 @@ func (s *FriendService) GetFriendProfile(ctx context.Context, req *pb.GetFriendP
 		return nil, InternalError(err)
 	}
 
+	publicKey, err := s.UserClient.GetPublicKey(ctx, &v1.GetPublicKeyRequest{
+		UserId: tid.GetUserId(),
+	})
+	if err != nil {
+		return nil, err
+	}
 	// 返回结果
 	return &pb.GetFriendProfileReply{
 		UniqueId: req.GetUniqueId(),
@@ -335,6 +341,7 @@ func (s *FriendService) GetFriendProfile(ctx context.Context, req *pb.GetFriendP
 			Location: getProfile.Profile.Location,
 			Other:    getProfile.Profile.Other,
 		},
+		PublicKey: publicKey.GetPublicKey(),
 	}, nil
 }
 

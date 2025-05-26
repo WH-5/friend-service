@@ -810,6 +810,8 @@ func (m *GetFriendProfileReply) validate(all bool) error {
 
 	// no validation rules for UniqueId
 
+	// no validation rules for PublicKey
+
 	if len(errors) > 0 {
 		return GetFriendProfileReplyMultiError(errors)
 	}

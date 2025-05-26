@@ -15,6 +15,13 @@ service User{
 	rpc GetUniqueByIdMany(GetUniqueByIdManyRequest)returns(GetUniqueByIdManyReply);
 	rpc GetProfile (GetProfileRequest) returns  (GetProfileReply);
 
+	rpc GetPublicKey (GetPublicKeyRequest) returns  (GetPublicKeyReply);
+}
+message GetPublicKeyRequest{
+	uint64 user_id=1;
+}
+message GetPublicKeyReply{
+	string public_key=1;
 }
 
 message GetProfileRequest{
