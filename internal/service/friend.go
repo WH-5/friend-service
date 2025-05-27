@@ -337,14 +337,14 @@ func (s *FriendService) GetFriendProfile(ctx context.Context, req *pb.GetFriendP
 	}
 	log.Infof("[GetFriendProfile] getProfile: %+v", getProfile)
 
-	publicKey, err := s.UserClient.GetPublicKey(ctx, &v1.GetPublicKeyRequest{
-		UserId: tid.GetUserId(),
-	})
-	if err != nil {
-		log.Errorf("[GetFriendProfile] GetPublicKey error: %v", err)
-		return nil, err
-	}
-	log.Infof("[GetFriendProfile] publicKey: %v", publicKey.GetPublicKey())
+	//publicKey, err := s.UserClient.GetPublicKey(ctx, &v1.GetPublicKeyRequest{
+	//	UserId: tid.GetUserId(),
+	//})
+	//if err != nil {
+	//	log.Errorf("[GetFriendProfile] GetPublicKey error: %v", err)
+	//	return nil, err
+	//}
+	//log.Infof("[GetFriendProfile] publicKey: %v", publicKey.GetPublicKey())
 
 	// 返回结果
 	reply := &pb.GetFriendProfileReply{
@@ -357,7 +357,8 @@ func (s *FriendService) GetFriendProfile(ctx context.Context, req *pb.GetFriendP
 			Location: getProfile.Profile.Location,
 			Other:    getProfile.Profile.Other,
 		},
-		PublicKey: publicKey.GetPublicKey(),
+		//PublicKey: publicKey.GetPublicKey(),
+
 	}
 	log.Infof("[GetFriendProfile] reply: %+v", reply)
 	return reply, nil
