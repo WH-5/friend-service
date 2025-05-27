@@ -26,7 +26,10 @@ func AuthCheckExist(friendService *service.FriendService) middleware.Middleware 
 
 			// 从上下文中获取请求头
 			if tr, ok := transport.FromServerContext(ctx); ok {
-				authHeader := tr.RequestHeader().Get("Authorization")
+
+				//authHeader := tr.RequestHeader().Get("Authorization")
+				authHeader := tr.RequestHeader().Get("authorization")
+				log.Printf("Full request header:\n%s", tr.RequestHeader())
 				if authHeader == "" {
 					return nil, fmt.Errorf("missing authorization header")
 				}
