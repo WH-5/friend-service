@@ -21,6 +21,7 @@ message Server {
     string network = 1;
     string addr = 2;
     google.protobuf.Duration timeout = 3;
+    bool grpcauth=4;//ture开启
   }
   HTTP http = 1;
   GRPC grpc = 2;

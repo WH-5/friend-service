@@ -5,6 +5,7 @@ server:
   grpc:
     addr: 0.0.0.0:9001
     timeout: 1s
+    grpcauth: false
   name: "friend-service"
   version: "1.1"
   registry: #这个在容器里的时候要加上

@@ -5,6 +5,7 @@ package api.friend.v1;
 import "google/api/annotations.proto";
 import "validate/validate.proto";
 
+
 option go_package = "github.com/WH-5/friend-service/api/friend/v1;v1";
 option java_multiple_files = true;
 option java_package = "api.friend.v1";
@@ -43,6 +44,8 @@ service Friend {
     option (google.api.http) = {
       get: "/friend/profile/{unique_id}"
     };
+    
+
   }
   rpc GetRequestPending(GetRequestPendingRequest)returns(GetRequestPendingReply){
     option (google.api.http) = {
