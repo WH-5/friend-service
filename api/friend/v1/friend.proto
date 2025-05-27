@@ -44,7 +44,7 @@ service Friend {
     option (google.api.http) = {
       get: "/friend/profile/{unique_id}"
     };
-    
+
 
   }
   rpc GetRequestPending(GetRequestPendingRequest)returns(GetRequestPendingReply){

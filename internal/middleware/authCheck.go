@@ -26,30 +26,45 @@ func AuthCheckExist(friendService *service.FriendService) middleware.Middleware 
 
 			tr, ok := transport.FromServerContext(ctx)
 			if !ok {
+				log.Println("auth middleware error: transport context not found")
 				return nil, fmt.Errorf("missing transport context")
 			}
 
 			authHeader := tr.RequestHeader().Get("Authorization")
 			log.Printf("Authorization header value: [%q]", authHeader)
-			log.Printf("Full request header:\n%s", tr.RequestHeader())
+			log.Printf("Full request header:\n%+v", tr.RequestHeader())
 			if authHeader == "" {
+				log.Println("auth middleware error: Authorization header is empty")
 				return nil, fmt.Errorf("missing authorization header")
 			}
 
 			tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+			log.Printf("Extracted token string: %s", tokenString)
+
 			token, err := pkg.ParseToken(tokenString, friendService.UC.CF.JWT_SECRET_KEY)
 			if err != nil {
-				return nil, err
+				log.Printf("auth middleware error: failed to parse token: %v", err)
+				return nil, fmt.Errorf("token 解析失败: %v", err)
 			}
+
+			log.Printf("Parsed token: %+v", token)
 			if !token.Valid {
+				log.Println("auth middleware error: token is not valid")
 				return nil, fmt.Errorf("token 无效")
 			}
+
 			claims, ok := token.Claims.(jwt.MapClaims)
 			if !ok {
+				log.Printf("auth middleware error: failed to cast claims to jwt.MapClaims, got type: %T", token.Claims)
 				return nil, fmt.Errorf("无法解析 Claims")
 			}
+
+			log.Printf("Token claims: %+v", claims)
+
 			uid := claims["user_id"]
 			session := claims["session"]
+			log.Printf("Extracted user_id: %v, session: %v", uid, session)
+
 			ctx = context.WithValue(ctx, "user_id", uid)
 			ctx = context.WithValue(ctx, "session", session)
 			ctx = context.WithValue(ctx, "token", token)
