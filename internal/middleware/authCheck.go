@@ -64,6 +64,7 @@ func AuthCheckExist(friendService *service.FriendService) middleware.Middleware 
 			// 调用下一个处理程序
 			reply, err = handler(ctx, req)
 			//fmt.Println("auth middleware out", reply)
+			log.Println("auth middleware returning 401: missing header")
 			return reply, err
 		}
 	}
