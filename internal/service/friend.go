@@ -297,41 +297,57 @@ func (s *FriendService) DeleteFriend(ctx context.Context, req *pb.DeleteFriendRe
 // 3. 调用 UseCase 获取双方好友关系对应的 Profile 信息
 // 4. 返回好友 Profile
 func (s *FriendService) GetFriendProfile(ctx context.Context, req *pb.GetFriendProfileRequest) (*pb.GetFriendProfileReply, error) {
+	log.Infof("[GetFriendProfile] called with req: %+v", req)
+
 	// 获取 user_id
 	uidValue := ctx.Value("user_id")
+	log.Infof("[GetFriendProfile] ctx.Value(\"user_id\") = %+v", uidValue)
+
 	sid, ok := uidValue.(float64)
 	if !ok {
+		log.Errorf("[GetFriendProfile] failed to assert user_id from context: %+v", uidValue)
 		return nil, RequestSendError(errors.New("invalid or missing user_id in context"))
 	}
+	log.Infof("[GetFriendProfile] extracted sid: %v", sid)
 
 	// 调用用户服务获取目标 user_id（如果有）
 	tid, err := s.UserClient.GetIdByUnique(ctx, &v1.GetIdByUniqueRequest{
 		UniqueId: req.GetUniqueId(),
 	})
 	if err != nil {
+		log.Errorf("[GetFriendProfile] GetIdByUnique error: %v", err)
 		return nil, RequestSendError(err)
 	}
-	//判断是否好友
+	log.Infof("[GetFriendProfile] target user id: %v", tid.GetUserId())
+
+	// 判断是否好友
 	if uint64(sid) != tid.GetUserId() {
-		//如果不相同，相同的话是查询自己，允许
+		log.Infof("[GetFriendProfile] sid != tid, checking IsFriend")
 		err := s.UC.IsFriend(ctx, uint(sid), uint(tid.GetUserId()))
 		if err != nil {
+			log.Errorf("[GetFriendProfile] IsFriend check failed: %v", err)
 			return nil, InternalError(err)
 		}
 	}
+
 	getProfile, err := s.UserClient.GetProfile(ctx, &v1.GetProfileRequest{UniqueId: req.GetUniqueId()})
 	if err != nil {
+		log.Errorf("[GetFriendProfile] GetProfile error: %v", err)
 		return nil, InternalError(err)
 	}
+	log.Infof("[GetFriendProfile] getProfile: %+v", getProfile)
 
 	publicKey, err := s.UserClient.GetPublicKey(ctx, &v1.GetPublicKeyRequest{
 		UserId: tid.GetUserId(),
 	})
 	if err != nil {
+		log.Errorf("[GetFriendProfile] GetPublicKey error: %v", err)
 		return nil, err
 	}
+	log.Infof("[GetFriendProfile] publicKey: %v", publicKey.GetPublicKey())
+
 	// 返回结果
-	return &pb.GetFriendProfileReply{
+	reply := &pb.GetFriendProfileReply{
 		UniqueId: req.GetUniqueId(),
 		UserProfile: &pb.UserProfile{
 			Nickname: getProfile.Profile.Nickname,
@@ -342,7 +358,9 @@ func (s *FriendService) GetFriendProfile(ctx context.Context, req *pb.GetFriendP
 			Other:    getProfile.Profile.Other,
 		},
 		PublicKey: publicKey.GetPublicKey(),
-	}, nil
+	}
+	log.Infof("[GetFriendProfile] reply: %+v", reply)
+	return reply, nil
 }
 
 // FriendMark 给好友改备注
