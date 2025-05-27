@@ -28,7 +28,8 @@ func AuthCheckExist(friendService *service.FriendService) middleware.Middleware 
 			if tr, ok := transport.FromServerContext(ctx); ok {
 
 				authHeader := tr.RequestHeader().Get("Authorization")
-				//authHeader := tr.RequestHeader().Get("authorization")
+				log.Printf("Authorization header value: [%q]", authHeader)
+
 				log.Printf("Full request header:\n%s", tr.RequestHeader())
 				if authHeader == "" {
 					return nil, fmt.Errorf("missing authorization header")
@@ -59,6 +60,7 @@ func AuthCheckExist(friendService *service.FriendService) middleware.Middleware 
 
 			}
 
+			log.Println("auth middleware completed, forwarding to handler")
 			// 调用下一个处理程序
 			reply, err = handler(ctx, req)
 			//fmt.Println("auth middleware out", reply)
