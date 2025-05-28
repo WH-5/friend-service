@@ -27,9 +27,14 @@ func NewFriendService(c *conf.Server, usecase *biz.FriendUsecase) *FriendService
 	if uc == nil {
 		log.Fatal("user client is nil — check consul config")
 	}
+	pc := pkg.PushClient(c.Registry.GetConsul())
+	if pc == nil {
+		log.Fatal("push client is nil — check consul config")
+	}
 	return &FriendService{
 		UC:         usecase,
 		UserClient: uc,
+		PushClient: pc,
 	}
 }
 
